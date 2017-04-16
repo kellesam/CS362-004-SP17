@@ -662,7 +662,7 @@ void cardEffectAdventurer(struct gameState *state, int currentPlayer, int *temph
 			drawntreasure++;
 		}
 		else {
-			temphand[z]=cardDrawn;
+			temphand[z] = cardDrawn;
 			state->handCount[currentPlayer]--; //this should just remove the top card (the most recently drawn one).
 			z++;
 		}
@@ -688,7 +688,7 @@ void cardEffectSmithy(struct gameState *state, int currentPlayer, int handPos) {
 	}
 
 	//discard card from hand
-	discardCard(handPos, currentPlayer, state, 0);
+	discardCard(handPos, currentPlayer, state, 1);
 	return;
 }
 
@@ -743,14 +743,9 @@ int cardEffectAmbassador(struct gameState *state, int currentPlayer, int handPos
 	if (DEBUG) 
 		printf("Player %d reveals card number: %d\n", currentPlayer, state->hand[currentPlayer][choice1]);
 
-	//increase supply count for choosen card by amount being discarded
-	state->supplyCount[state->hand[currentPlayer][choice1]] += choice2;
-
 	//each other player gains a copy of revealed card
 	for (i = 0; i < state->numPlayers; i++) {
-		if (i != currentPlayer) {
-			gainCard(state->hand[currentPlayer][choice1], state, 0, i);
-		}
+		gainCard(state->hand[currentPlayer][choice1], state, 0, i);
 	}
 
 	//discard played card from hand
