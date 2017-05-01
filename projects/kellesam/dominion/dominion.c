@@ -322,25 +322,19 @@ int supplyCount(int card, struct gameState *state) {
 }
 
 int fullDeckCount(int player, int card, struct gameState *state) {
-  int i;
-  int count = 0;
+	int i;
+	int count = 0;
+	
+	for (i = 0; i < state->deckCount[player]; i++)
+		if (state->deck[player][i] == card) count++;
 
-  for (i = 0; i < state->deckCount[player]; i++)
-    {
-      if (state->deck[player][i] == card) count++;
-    }
+	for (i = 0; i < state->handCount[player]; i++)
+		if (state->hand[player][i] == card) count++;
+	
+	for (i = 0; i < state->discardCount[player]; i++)
+		if (state->discard[player][i] == card) count++;
 
-  for (i = 0; i < state->handCount[player]; i++)
-    {
-      if (state->hand[player][i] == card) count++;
-    }
-
-  for (i = 0; i < state->discardCount[player]; i++)
-    {
-      if (state->discard[player][i] == card) count++;
-    }
-
-  return count;
+	return count;
 }
 
 int whoseTurn(struct gameState *state) {
@@ -388,30 +382,26 @@ int endTurn(struct gameState *state) {
 }
 
 int isGameOver(struct gameState *state) {
-  int i;
-  int j;
+	int i;
+	int j;
 	
-  //if stack of Province cards is empty, the game ends
-  if (state->supplyCount[province] == 0)
-    {
-      return 1;
-    }
-
-  //if three supply pile are at 0, the game ends
-  j = 0;
-  for (i = 0; i < 25; i++)
-    {
-      if (state->supplyCount[i] == 0)
-	{
-	  j++;
+	//if stack of Province cards is empty, the game ends
+	if (state->supplyCount[province] == 0) {
+		return 1;
 	}
-    }
-  if ( j >= 3)
-    {
-      return 1;
-    }
-
-  return 0;
+		
+	//if three supply pile are at 0, the game ends
+	j = 0;
+	for (i = 0; i < 25; i++) {
+		if (state->supplyCount[i] == 0) {
+			j++;
+		}
+	}
+	if ( j >= 3) {
+		return 1;
+	}
+	
+	return 0;
 }
 
 int scoreFor (int player, struct gameState *state) {
@@ -780,7 +770,7 @@ int cardEffectMine(struct gameState *state, int currentPlayer, int handPos, int 
 	if (choice2 > treasure_map || choice2 < curse) {
 		return -1;
 	}
-
+	
 	if ( (getCost(state->hand[currentPlayer][choice1]) + 3) > getCost(choice2) ) {
 		return -1;
 	}
@@ -1287,71 +1277,60 @@ int discardCard(int handPos, int currentPlayer, struct gameState *state, int tra
   return 0;
 }
 
-int gainCard(int supplyPos, struct gameState *state, int toFlag, int player)
-{
-  //Note: supplyPos is enum of choosen card
+int gainCard(int supplyPos, struct gameState *state, int toFlag, int player) {
+	//Note: supplyPos is enum of choosen card
 	
-  //check if supply pile is empty (0) or card is not used in game (-1)
-  if ( supplyCount(supplyPos, state) < 1 )
-    {
-      return -1;
-    }
+	//check if supply pile is empty (0) or card is not used in game (-1)
+	if ( supplyCount(supplyPos, state) < 1 ) {
+		return -1;
+	}
 	
-  //added card for [whoseTurn] current player:
-  // toFlag = 0 : add to discard
-  // toFlag = 1 : add to deck
-  // toFlag = 2 : add to hand
+	//added card for [whoseTurn] current player:
+	// toFlag = 0 : add to discard
+	// toFlag = 1 : add to deck
+	// toFlag = 2 : add to hand
 
-  if (toFlag == 1)
-    {
-      state->deck[ player ][ state->deckCount[player] ] = supplyPos;
-      state->deckCount[player]++;
-    }
-  else if (toFlag == 2)
-    {
-      state->hand[ player ][ state->handCount[player] ] = supplyPos;
-      state->handCount[player]++;
-    }
-  else
-    {
-      state->discard[player][ state->discardCount[player] ] = supplyPos;
-      state->discardCount[player]++;
-    }
+	if (toFlag == 1) {
+		state->deck[ player ][ state->deckCount[player] ] = supplyPos;
+		state->deckCount[player]++;
+	}
+	else if (toFlag == 2) {
+		state->hand[ player ][ state->handCount[player] ] = supplyPos;
+		state->handCount[player]++;
+	}
+	else {
+		state->discard[player][ state->discardCount[player] ] = supplyPos;
+		state->discardCount[player]++;
+	}
 	
-  //decrease number in supply pile
-  state->supplyCount[supplyPos]--;
-	 
-  return 0;
+	//decrease number in supply pile
+	state->supplyCount[supplyPos]--;
+	
+	return 0;
 }
 
-int updateCoins(int player, struct gameState *state, int bonus)
-{
-  int i;
+int updateCoins(int player, struct gameState *state, int bonus) {
+	int i;
 	
-  //reset coin count
-  state->coins = 0;
-
-  //add coins for each Treasure card in player's hand
-  for (i = 0; i < state->handCount[player]; i++)
-    {
-      if (state->hand[player][i] == copper)
-	{
-	  state->coins += 1;
-	}
-      else if (state->hand[player][i] == silver)
-	{
-	  state->coins += 2;
-	}
-      else if (state->hand[player][i] == gold)
-	{
-	  state->coins += 3;
+	//reset coin count
+	state->coins = 0;
+	
+	//add coins for each Treasure card in player's hand
+	for (i = 0; i < state->handCount[player]; i++) {
+		if (state->hand[player][i] == copper)
+			state->coins += 1;
+		
+		else if (state->hand[player][i] == silver)
+			state->coins += 2;
+		
+		else if (state->hand[player][i] == gold)
+			state->coins += 3;
 	}	
-    }	
-
-  //add bonus
-  state->coins += bonus;
-
-  return 0;
+	
+	//add bonus
+	state->coins += bonus;
+	
+	return 0;
 }
 
 
