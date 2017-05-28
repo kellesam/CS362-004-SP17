@@ -1,0 +1,74 @@
+Noverse Bug Reporting Template
+==============================
+
+Title:	Smithy card not disposed in player's discard pile
+
+Class:	Serious bug
+
+Date:		2017-05-25
+Reported By:	Sam Keller
+Email:		kellesam@oregonstate.edu
+
+
+Product:	flip1.engr.oregonstate.edu	Version: 3.10.0-327.36.3.el7.x86_64
+Platform:	Linux				Version: 64-bit
+Browser:	n/a				Version: n/a
+URL:		n/a
+
+Is it reproducible: Yes
+
+Description
+===========
+The smithy card calls discardCard() on itself after drawing 3 cards but does not
+end up in the player's discard pile. I used tesing assertions to verify that the
+player's discard count is 1 less than it should be. This error happens for all
+instances of the smithy function, regardless of the player's hand, deck, and
+discard counts.
+
+
+Steps to Produce/Reproduce
+--------------------------
+Call the performSmithyCardEffect() function with at least 3 cards in the player's
+deck. Make sure the discardCount variable is set to a valid, positive integer.
+
+
+Expected Results
+----------------
+The discard count is incremented by 1 after the smithy card is played and discarded.
+
+
+Actual Results
+--------------
+The discard count remains unchanged.
+
+
+Workarounds
+-----------
+None.
+
+
+Attachments
+-----------
+Logs from unit testing:
+
+TEST 5: discard pile gains 1 card
+before: discard pile = 0, expected = 0
+Play card
+after: discard pile = 0, expected = 1
+Function did not return <1>
+ASSERT FAILED: discard count = 0, expected = 1
+
+Logs from random testing:
+
+Testing smithy card.
+RANDOM TESTS.
+Function did not return <143>
+ASSERT FAILED: discard count = 142, expected = 143
+Function did not return <388>
+ASSERT FAILED: discard count = 387, expected = 388
+
+
+Other Information
+-----------------
+I would suggest checking if the card is either trashed instead of discarded or
+if the card is incorrectly discarded into another player's discard pile.

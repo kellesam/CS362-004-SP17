@@ -1,0 +1,93 @@
+Noverse Bug Reporting Template
+==============================
+
+Title:	Adventurer card does not properly dispose all drawn and played cards.
+
+Class:	Serious bug
+
+Date:		2017-05-25
+Reported By:	Sam Keller
+Email:		kellesam@oregonstate.edu
+
+
+Product:	flip1.engr.oregonstate.edu	Version: 3.10.0-327.36.3.el7.x86_64
+Platform:	Linux				Version: 64-bit
+Browser:	n/a				Version: n/a
+URL:		n/a
+
+Is it reproducible: Yes
+
+Description
+===========
+After playing the adventurer card the player's hand count and discard counts are both
+incorrect. The hand count is 1 card too high and the discard count is 2 cards too low.
+It appears that two cards are not properly disposed (either two drawn non-treasure
+cards or one drawn non-treasure card and the played adventurer card) and one of them
+has an additional issue with incrementing the disposal count.
+
+
+Steps to Produce/Reproduce
+--------------------------
+Call the performAdventurerCardEffect() function with at least 2 treasure cards in the
+player's deck. Compare the hand, deck, and discard counts before and after the card
+is played.
+
+
+Expected Results
+----------------
+The player's hand gains 1 card (2 new treasures, discard 1 played adventurer card).
+The player's deck loses 2 treasure and all drawn non-treasure cards.
+The player's discard gains 1 adventurer card and all drawn non-treasure cards.
+
+
+Actual Results
+--------------
+The player's hand incorrectly gains 2 cards.
+The player's deck correctly loses 2 treasure and all drawn non-treasure cards.
+The player's discard incorrectly gains 2 cards fewer than expected.
+
+
+Workarounds
+-----------
+None.
+
+
+Attachments
+-----------
+Logs from unit testing:
+
+TEST 1: player gains 2 cards, discards all other revealed cards
+Treasure placed at deck positions 0 and 1
+Finding the two treasures will require disposing 3 other cards
+before: hand count = 5, expected = 5
+before: deck count = 5, expected = 5
+Play card
+after: hand count = 7, expected = 6
+Function did not return <6>
+ASSERT FAILED: hand count = 7, expected = 6
+after: deck count = 0, expected = 0
+
+Treasure placed at deck positions 1 and 3
+Finding the two treasures will require disposing 2 other cards
+before: hand count = 5, expected = 5
+before: deck count = 5, expected = 5
+Play card
+after: hand count = 7, expected = 6
+Function did not return <6>
+ASSERT FAILED: hand count = 7, expected = 6
+after: deck count = 1, expected = 1
+
+Logs from random testing:
+
+Testing adventurer card.
+RANDOM TESTS.
+Function did not return <163>
+ASSERT FAILED: hand count = 164, expected = 163
+Function did not return <154>
+ASSERT FAILED: discard count = 152, expected = 154
+
+
+Other Information
+-----------------
+I would suggest checking if one of the drawn cards not being disposed and the 
+adventurer card is not calling discardCard().

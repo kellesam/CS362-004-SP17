@@ -18,17 +18,17 @@ int asserttrue(int left, int right) {
 }
 
 int main() {
-	int newCards = 0;
-	int discarded = 1;
-	int xtraCoins = 0;
-	int shuffledCards = 0;
+    int newCards = 0;
+    int discarded = 1;
+    int xtraCoins = 0;
+    int shuffledCards = 0;
 
-	int i, j, m;
-	int handpos = 0, choice1 = 0, choice2 = 0, choice3 = 0, bonus = 0;
-	int remove1, remove2;
-	int seed = 1000;
-	int numPlayers = 2;
-	int thisPlayer = 0;
+    int i, j, m;
+    int handpos = 0, choice1 = 0, choice2 = 0, choice3 = 0, bonus = 0;
+    int remove1, remove2;
+    int seed = 1000;
+    int numPlayers = 2;
+    int thisPlayer = 0;
 	struct gameState G, testG;
 	int k[10] = {adventurer, embargo, village, minion, mine, cutpurse,
 			sea_hag, tribute, smithy, council_room};
@@ -45,9 +45,6 @@ int main() {
 	//go through all possible combinations of 2 treasures in deck
 	for (i = 0; i < G.deckCount[thisPlayer]; i++) {
 		for (j = i + 1; j < G.deckCount[thisPlayer]; j++) {
-			
-			//set the adventurer card in the hand
-			G.hand[thisPlayer][0] = adventurer;
 			
 			//set player deck to have 2 randomly placed treasures
 			for (m = 0; m < G.deckCount[thisPlayer]; m++) {
